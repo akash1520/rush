@@ -1,0 +1,191 @@
+/* Basic Reset & Body Styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Gradient background for a modern look */
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Main container for the todo app */
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    /* Soft shadow for depth */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+}
+
+h1 {
+    text-align: center;
+    color: #2575fc;
+    margin-bottom: 25px;
+    font-size: 2.5em;
+    font-weight: 700;
+}
+
+/* Input Section Styling */
+.todo-input-section {
+    display: flex;
+    margin-bottom: 25px;
+    gap: 10px; /* Space between input and button */
+}
+
+#new-todo-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+#new-todo-input:focus {
+    border-color: #6a11cb;
+    box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2); /* Focus ring effect */
+}
+
+#add-todo-btn {
+    padding: 12px 20px;
+    background-color: #2575fc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Prevent button from shrinking on smaller screens */
+}
+
+#add-todo-btn:hover {
+    background-color: #1a5acb;
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+#add-todo-btn:active {
+    transform: translateY(0);
+}
+
+/* Todo List Styling */
+#todo-list {
+    list-style: none;
+    padding: 0;
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+    font-style: italic;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+
+.todo-item:last-child {
+    border-bottom: none;
+}
+
+.todo-item:hover {
+    background-color: #f9f9f9;
+}
+
+.todo-item input[type="checkbox"] {
+    margin-right: 15px;
+    min-width: 20px;
+    min-height: 20px;
+    cursor: pointer;
+    /* Use accent-color for easy browser-consistent styling of checkboxes */
+    accent-color: #2575fc;
+}
+
+.todo-item span {
+    flex-grow: 1;
+    font-size: 1.1em;
+    color: #333;
+    word-break: break-word; /* Prevents long words from overflowing */
+}
+
+.todo-item.completed span {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.todo-item .delete-btn {
+    background: none;
+    border: none;
+    color: #ff4d4d; /* Red color for delete */
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 5px;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.todo-item .delete-btn:hover {
+    color: #cc0000;
+    transform: scale(1.1); /* Slight enlarge on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    .todo-input-section {
+        flex-direction: column; /* Stack input and button vertically */
+        gap: 15px;
+    }
+
+    #add-todo-btn {
+        width: 100%;
+    }
+
+    .todo-item {
+        flex-wrap: wrap; /* Allow items to wrap on small screens */
+        padding: 10px 0;
+    }
+
+    .todo-item span {
+        width: calc(100% - 70px); /* Adjust width to make space for checkbox and delete button */
+        order: 1; /* Make text appear after checkbox */
+        margin-top: 5px;
+    }
+    
+    .todo-item input[type="checkbox"] {
+        order: 0;
+    }
+
+    .todo-item .delete-btn {
+        margin-left: auto; /* Push delete button to the right */
+        order: 2;
+        margin-top: 5px;
+    }
+}

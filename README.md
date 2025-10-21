@@ -57,6 +57,22 @@ python -m prisma generate
 
 6) Run dev servers
 
+**Option A: Using the development script (recommended)**
+
+```bash
+cd /home/odoo/rush
+./dev.sh
+```
+
+This will start both the API and web servers in the background. Press `Ctrl+C` to stop all services.
+
+To stop the servers separately:
+```bash
+./dev-stop.sh
+```
+
+**Option B: Manual (separate terminals)**
+
 - Backend API (in one terminal):
 
 ```bash
@@ -75,6 +91,10 @@ pnpm dev
 Endpoints:
 - Web: http://localhost:3000
 - API: http://localhost:8000/health
+
+Logs (when using dev.sh):
+- API: `.dev-logs/api.log`
+- Web: `.dev-logs/web.log`
 
 ## Structure
 - apps/web: Next.js
