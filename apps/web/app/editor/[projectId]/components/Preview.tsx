@@ -7,25 +7,49 @@ import { useEffect, useState } from 'react';
 interface PreviewProps {
   projectId: string;
   files: FileRecord[];
+  localFileContents?: Record<string, string>; // Optional: preview unsaved changes
 }
 
-export function Preview({ projectId, files }: PreviewProps) {
-  const [sandpackFiles, setSandpackFiles] = useState<Record<string, string>>({});
+interface SandpackFile {
+  code: string;
+  hidden?: boolean;
+  active?: boolean;
+  readOnly?: boolean;
+}
+
+export function Preview({ projectId, files, localFileContents }: PreviewProps) {
+  const [sandpackFiles, setSandpackFiles] = useState<Record<string, SandpackFile>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadFiles = async () => {
       setIsLoading(true);
-      const filesMap: Record<string, string> = {};
+      const filesMap: Record<string, SandpackFile> = {};
 
       // Fetch content for each file
       for (const file of files) {
         try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/projects/${projectId}/files/${file.path}`
-          );
-          const data = await response.json();
-          filesMap[`/${file.path}`] = data.content;
+          // Check if we have local unsaved content
+          const localPath = file.path;
+          if (localFileContents && localFileContents[localPath]) {
+            // Use local content if available
+            filesMap[`/${file.path}`] = {
+              code: localFileContents[localPath],
+              hidden: false,
+            };
+          } else {
+            // Otherwise fetch from API
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/projects/${projectId}/files/${file.path}`
+            );
+            const data = await response.json();
+
+            // Sandpack expects files in this format
+            filesMap[`/${file.path}`] = {
+              code: data.content,
+              hidden: false,
+            };
+          }
         } catch (error) {
           console.error(`Failed to load ${file.path}:`, error);
         }
@@ -41,7 +65,7 @@ export function Preview({ projectId, files }: PreviewProps) {
       setSandpackFiles({});
       setIsLoading(false);
     }
-  }, [projectId, files]);
+  }, [projectId, files, localFileContents]);
 
   if (isLoading) {
     return (
@@ -68,20 +92,27 @@ export function Preview({ projectId, files }: PreviewProps) {
     );
   }
 
+  // Find index.html or first HTML file to set as active
+  const htmlFile = Object.keys(sandpackFiles).find(path =>
+    path.includes('index.html') || path.endsWith('.html')
+  ) || Object.keys(sandpackFiles)[0];
+
   return (
-    <div className="h-full">
-      <Sandpack
-        template="static"
-        files={sandpackFiles}
-        options={{
-          showNavigator: true,
-          showTabs: false,
-          showLineNumbers: true,
-          editorHeight: '100%',
-          editorWidthPercentage: 0,
-        }}
-        theme="dark"
-      />
+    <div className="h-full w-full overflow-hidden">
+      <div style={{ height: '100%', width: '100%' }}>
+        <Sandpack
+          template="static"
+          files={sandpackFiles}
+          options={{
+            showNavigator: false,
+            showTabs: false,
+            showLineNumbers: false,
+            editorHeight: '100vh',
+            editorWidthPercentage: 0,
+          }}
+          theme="dark"
+        />
+      </div>
     </div>
   );
 }

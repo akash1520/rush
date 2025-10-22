@@ -63,6 +63,12 @@ Example format:
 ```
 
 Generate clean, modern, responsive code. Use semantic HTML, proper CSS styling, and vanilla JavaScript.
+
+**Important Color Guidelines**:
+- Use SIMPLE colors only - preferably a single color (white or black)
+- Avoid gradients and multiple colors
+- Keep the design minimal and clean
+- Use shades of gray if absolutely necessary for contrast
 """
 
     # Combine system prompt with user prompt
