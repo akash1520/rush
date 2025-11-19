@@ -3,8 +3,12 @@ from pathlib import Path
 
 # Base paths
 BASE_DIR = Path(__file__).parent.parent
-STORAGE_DIR = BASE_DIR / "storage" / "projects"
 DATA_DIR = BASE_DIR / "data"
+
+# Storage directory - configurable via environment variable
+# Default: Outside project root at /home/odoo/rush-storage
+STORAGE_BASE = os.getenv("STORAGE_BASE_DIR", "/home/odoo/rush-storage")
+STORAGE_DIR = Path(STORAGE_BASE) / "projects"
 
 # Ensure directories exist
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)

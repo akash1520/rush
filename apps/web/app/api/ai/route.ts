@@ -32,6 +32,7 @@ Guidelines:
 - Create separate files for CSS and JS when appropriate
 - Make it visually appealing with good UX
 - Include comments in the code
+- **Color Palette**: Use SIMPLE colors only - preferably a single color (white or black). Avoid gradients and multiple colors. Keep it minimal and clean.
 
 After generating the files, return the JSON structure. The files will be automatically saved to the project.
 `;

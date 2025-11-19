@@ -36,6 +36,12 @@ export default function EditorPage() {
   } = useEditorStore();
 
   const [showPreview, setShowPreview] = useState(true);
+  const [previewKey, setPreviewKey] = useState(0);
+
+  // Function to refresh preview
+  const refreshPreview = () => {
+    setPreviewKey(prev => prev + 1);
+  };
 
   // Update store when project loads
   useEffect(() => {
@@ -80,6 +86,7 @@ export default function EditorPage() {
         },
       });
       markAsSaved(activeFilePath);
+      refreshPreview(); // Refresh preview after save
     } catch (error) {
       console.error('Failed to save file:', error);
       alert('Failed to save file');
@@ -104,6 +111,10 @@ export default function EditorPage() {
       } catch (error) {
         console.error(`Failed to save ${path}:`, error);
       }
+    }
+
+    if (unsavedFiles.length > 0) {
+      refreshPreview(); // Refresh preview after saving all
     }
   };
 
@@ -229,14 +240,27 @@ export default function EditorPage() {
         {/* Preview */}
         {showPreview && (
           <div className="w-1/3 border-l border-gray-200">
-            <Preview projectId={projectId} files={project.files || []} />
+            <Preview
+              key={previewKey}
+              projectId={projectId}
+              files={project.files || []}
+            />
           </div>
         )}
 
         {/* Chat Panel */}
         {isChatPanelOpen && (
           <div className="w-96">
-            <ChatPanel projectId={projectId} onGenerated={() => refetch()} />
+            <ChatPanel
+              projectId={projectId}
+              onGenerated={async () => {
+                await refetch();
+                // Small delay to ensure files are saved
+                setTimeout(() => {
+                  refreshPreview();
+                }, 500);
+              }}
+            />
           </div>
         )}
       </div>
