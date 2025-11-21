@@ -1,0 +1,26 @@
+# Ignore files that don't need to be deployed
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.local
+*.db
+*.sqlite
+storage/
+data/dev.db
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+

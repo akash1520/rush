@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+ENV/
+*.pyd
+
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# Database
+*.db
+*.sqlite
+data/
+dev.db
+
+# Storage
+storage/
+*.log
+*.log.*
+
+# Prisma migrations (not needed for build, only schema)
+prisma/migrations/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Railway
+.railway/
+railway.toml
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Other
+.DS_Store
+*.md
+!README.md
+Thumbs.db
+
