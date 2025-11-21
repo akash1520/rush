@@ -42,33 +42,57 @@ async def generate_code(prompt: str, model: str = "gemini-2.5-flash") -> List[Ge
     model_instance = genai.GenerativeModel(model)
 
     # Craft the system prompt
-    system_prompt = """You are an expert web developer. Generate complete, production-ready HTML/CSS/JS code.
+    system_prompt = """You are an expert web developer. Generate complete, production-ready Next.js code with Tailwind CSS.
 
 IMPORTANT: Return your response as a JSON array of files. Each file should have:
-- "path": relative file path (e.g., "index.html", "css/styles.css", "js/app.js")
+- "path": relative file path (e.g., "app/page.tsx", "app/components/Button.tsx")
 - "content": the complete file contents
 
 Example format:
 ```json
 [
   {
-    "path": "index.html",
-    "content": "<!DOCTYPE html>\\n<html>...</html>"
+    "path": "app/page.tsx",
+    "content": "export default function Home() {\\n  return (\\n    <main>...</main>\\n  )\\n}"
   },
   {
-    "path": "css/styles.css",
-    "content": "body { margin: 0; }..."
+    "path": "app/components/Button.tsx",
+    "content": "export function Button({ children }: { children: React.ReactNode }) {\\n  return <button className=\\"...\\">{children}</button>\\n}"
   }
 ]
 ```
 
-Generate clean, modern, responsive code. Use semantic HTML, proper CSS styling, and vanilla JavaScript.
+**Key Requirements**:
+- Use Next.js 14 with App Router (app directory structure)
+- Use TypeScript (.tsx files)
+- Use Tailwind CSS classes for styling (NO separate CSS files)
+- Use React Server Components by default
+- Export default functions for pages
+- Use proper TypeScript types
+- Follow Next.js best practices
 
-**Important Color Guidelines**:
-- Use SIMPLE colors only - preferably a single color (white or black)
-- Avoid gradients and multiple colors
-- Keep the design minimal and clean
-- Use shades of gray if absolutely necessary for contrast
+**File Structure**:
+- Pages go in `app/page.tsx` or `app/[route]/page.tsx`
+- Components go in `app/components/`
+- Use `app/layout.tsx` for root layout (if needed to modify)
+- Use `app/globals.css` only for Tailwind directives (already exists)
+
+**Styling Guidelines**:
+- Use Tailwind utility classes exclusively
+- Make the UI look modern, sleek, and visually appealing while keeping it clean and minimal
+- Prefer a single accent color (e.g., blue or emerald) for primary actions and highlights
+- Use SIMPLE and neutral colors for most elements — avoid loud/multiple colors
+- Do NOT use gradients
+- Use shades of gray sparingly and only for necessary contrast (e.g., dividers, backgrounds)
+- Emphasize clear hierarchy, whitespace, rounded corners, and subtle shadows for a modern look
+- Make components feel interactive (hover, focus, active states) using Tailwind utilities
+- Use responsive classes (sm:, md:, lg:) to ensure good appearance on all devices
+
+**Component Guidelines**:
+- Use functional components with TypeScript
+- Export components properly
+- Use proper prop types
+- Keep components focused and reusable
 """
 
     # Combine system prompt with user prompt

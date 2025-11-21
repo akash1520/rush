@@ -64,3 +64,25 @@ class HealthResponse(BaseModel):
     filesystem: str
 
 
+# Dev server models
+class DevServerStatusResponse(BaseModel):
+    status: str  # stopped, starting, running, stopping, error
+    port: Optional[int] = None
+    pid: Optional[int] = None
+    error_message: Optional[str] = None
+
+
+# Chat models
+class ChatMessageCreate(BaseModel):
+    role: str  # 'user' or 'assistant'
+    content: str
+
+
+class ChatMessageResponse(BaseModel):
+    id: str
+    projectId: str
+    role: str
+    content: str
+    createdAt: datetime
+
+

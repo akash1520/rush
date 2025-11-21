@@ -1,6 +1,7 @@
 'use client';
 
 import { useChat, type Message } from 'ai/react';
+import { useChatMessages, useCreateChatMessage } from '../../../../lib/api';
 
 interface ChatPanelProps {
   projectId: string;
@@ -8,14 +9,54 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ projectId, onGenerated }: ChatPanelProps) {
+  const { data: savedMessages } = useChatMessages(projectId);
+  const createChatMessage = useCreateChatMessage();
+
+  // Convert saved messages to useChat format
+  const initialMessages: Message[] = savedMessages
+    ? savedMessages.map((msg) => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
+      }))
+    : [];
+
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/ai',
     body: { projectId },
-    onFinish: () => {
+    initialMessages,
+    onFinish: async (message) => {
+      // Save assistant message to database
+      try {
+        await createChatMessage.mutateAsync({
+          projectId,
+          role: 'assistant',
+          content: message.content,
+        });
+      } catch (error) {
+        console.error('Failed to save assistant message:', error);
+      }
       // Refresh project data after generation
       onGenerated?.();
     },
   });
+
+  // Save user messages to database
+  const handleSubmitWithSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const userMessage = input.trim();
+    if (!userMessage) return;
+
+    // Save user message immediately
+    await createChatMessage.mutateAsync({
+      projectId,
+      role: 'user',
+      content: userMessage,
+    });
+
+    // Then submit to AI
+    handleSubmit(e);
+  };
 
   return (
     <div className="flex flex-col h-full bg-white border-l border-gray-200">
@@ -66,7 +107,7 @@ export function ChatPanel({ projectId, onGenerated }: ChatPanelProps) {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+      <form onSubmit={handleSubmitWithSave} className="p-4 border-t border-gray-200">
         <div className="flex gap-2">
           <input
             type="text"
