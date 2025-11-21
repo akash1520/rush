@@ -113,3 +113,160 @@ export function getDownloadUrl(projectId: string): string {
   return `${API_BASE_URL}/projects/${projectId}/zip`;
 }
 
+// Dev Server Types
+export interface DevServerStatus {
+  status: 'stopped' | 'starting' | 'running' | 'stopping' | 'error';
+  port?: number;
+  pid?: number;
+  error_message?: string;
+}
+
+export interface WebSocketMessage {
+  type: 'status' | 'output' | 'error' | 'pong';
+  status?: string;
+  port?: number;
+  pid?: number;
+  line?: string;
+  is_stderr?: boolean;
+  message?: string;
+}
+
+// Dev Server API
+export function useDevServerStatus(projectId: string | null) {
+  return useQuery<DevServerStatus>({
+    queryKey: ['dev-server', projectId],
+    queryFn: () => fetchAPI<DevServerStatus>(`/projects/${projectId}/dev-server/status`),
+    enabled: !!projectId,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      // Poll more frequently if server is starting
+      if (data?.status === 'starting') {
+        return 1000; // 1 second
+      }
+      return 5000; // 5 seconds otherwise
+    },
+  });
+}
+
+export function useStartDevServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation<DevServerStatus, Error, string>({
+    mutationFn: (projectId) =>
+      fetchAPI<DevServerStatus>(`/projects/${projectId}/dev-server/start`, {
+        method: 'POST',
+      }),
+    onSuccess: (_, projectId) => {
+      queryClient.invalidateQueries({ queryKey: ['dev-server', projectId] });
+    },
+  });
+}
+
+export function useStopDevServer() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: (projectId) =>
+      fetchAPI(`/projects/${projectId}/dev-server/stop`, {
+        method: 'POST',
+      }),
+    onSuccess: (_, projectId) => {
+      queryClient.invalidateQueries({ queryKey: ['dev-server', projectId] });
+    },
+  });
+}
+
+// WebSocket client for dev server logs
+export function createDevServerWebSocket(
+  projectId: string,
+  onMessage: (message: WebSocketMessage) => void,
+  onError?: (error: Event) => void,
+  onClose?: () => void
+): WebSocket | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const wsUrl = API_BASE_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+  const ws = new WebSocket(`${wsUrl}/projects/${projectId}/dev-server/ws`);
+
+  ws.onmessage = (event) => {
+    try {
+      const message: WebSocketMessage = JSON.parse(event.data);
+      onMessage(message);
+    } catch (error) {
+      console.error('Failed to parse WebSocket message:', error);
+    }
+  };
+
+  ws.onerror = (error) => {
+    if (onError) {
+      onError(error);
+    }
+  };
+
+  ws.onclose = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  // Send ping every 30 seconds to keep connection alive
+  const pingInterval = setInterval(() => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'ping' }));
+    } else {
+      clearInterval(pingInterval);
+    }
+  }, 30000);
+
+  return ws;
+}
+
+// Chat History Types
+export interface ChatMessage {
+  id: string;
+  projectId: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: string;
+}
+
+// Chat History API
+export function useChatMessages(projectId: string | null) {
+  return useQuery<ChatMessage[]>({
+    queryKey: ['chat-messages', projectId],
+    queryFn: () => fetchAPI<ChatMessage[]>(`/projects/${projectId}/chat/messages`),
+    enabled: !!projectId,
+  });
+}
+
+export function useCreateChatMessage() {
+  const queryClient = useQueryClient();
+
+  return useMutation<ChatMessage, Error, { projectId: string; role: 'user' | 'assistant'; content: string }>({
+    mutationFn: ({ projectId, role, content }) =>
+      fetchAPI<ChatMessage>(`/projects/${projectId}/chat/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ role, content }),
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['chat-messages', variables.projectId] });
+    },
+  });
+}
+
+export function useClearChatMessages() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: (projectId) =>
+      fetchAPI(`/projects/${projectId}/chat/messages`, {
+        method: 'DELETE',
+      }),
+    onSuccess: (_, projectId) => {
+      queryClient.invalidateQueries({ queryKey: ['chat-messages', projectId] });
+    },
+  });
+}
+

@@ -2,14 +2,18 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useProject, useFileContent, useUpsertFile, getDownloadUrl } from '../../../lib/api';
+import { useProject, useFileContent, useUpsertFile, getDownloadUrl, useDevServerStatus } from '../../../lib/api';
 import { useEditorStore } from '../../../lib/store';
 import { FileTree } from './components/FileTree';
 import { EditorTabs } from './components/EditorTabs';
 import { CodeEditor } from './components/CodeEditor';
 import { ChatPanel } from './components/ChatPanel';
 import { Preview } from './components/Preview';
+import { DevServerStatus } from './components/DevServerStatus';
+import { TerminalOutput } from './components/TerminalOutput';
+import { ConsoleLogs } from './components/ConsoleLogs';
 
 export default function EditorPage() {
   const params = useParams();
@@ -36,12 +40,18 @@ export default function EditorPage() {
   } = useEditorStore();
 
   const [showPreview, setShowPreview] = useState(true);
-  const [previewKey, setPreviewKey] = useState(0);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [showConsole, setShowConsole] = useState(false);
+  const previewIframeRef = React.useRef<HTMLIFrameElement>(null);
 
-  // Function to refresh preview
-  const refreshPreview = () => {
-    setPreviewKey(prev => prev + 1);
-  };
+  // Auto-show terminal when server is starting so user can see what's happening
+  const { data: devServerStatus } = useDevServerStatus(projectId);
+  useEffect(() => {
+    if (devServerStatus?.status === 'starting') {
+      setShowTerminal(true);
+    }
+  }, [devServerStatus?.status]);
+
 
   // Update store when project loads
   useEffect(() => {
@@ -86,7 +96,7 @@ export default function EditorPage() {
         },
       });
       markAsSaved(activeFilePath);
-      refreshPreview(); // Refresh preview after save
+      // Next.js HMR will automatically reload on file save
     } catch (error) {
       console.error('Failed to save file:', error);
       alert('Failed to save file');
@@ -112,10 +122,7 @@ export default function EditorPage() {
         console.error(`Failed to save ${path}:`, error);
       }
     }
-
-    if (unsavedFiles.length > 0) {
-      refreshPreview(); // Refresh preview after saving all
-    }
+    // Next.js HMR will automatically reload on file save
   };
 
   const handleDownload = () => {
@@ -168,6 +175,18 @@ export default function EditorPage() {
             className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
           >
             {showPreview ? '👁️ Preview' : '👁️‍🗨️ Show Preview'}
+          </button>
+          <button
+            onClick={() => setShowTerminal(!showTerminal)}
+            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+          >
+            {showTerminal ? '💻 Terminal' : '💻 Show Terminal'}
+          </button>
+          <button
+            onClick={() => setShowConsole(!showConsole)}
+            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+          >
+            {showConsole ? '📝 Console' : '📝 Show Console'}
           </button>
           <button
             onClick={() => setIsChatPanelOpen(!isChatPanelOpen)}
@@ -237,14 +256,26 @@ export default function EditorPage() {
           </div>
         </div>
 
-        {/* Preview */}
+        {/* Preview Panel - Shows ONLY the AI-generated Next.js app */}
         {showPreview && (
-          <div className="w-1/3 border-l border-gray-200">
-            <Preview
-              key={previewKey}
-              projectId={projectId}
-              files={project.files || []}
-            />
+          <div className="w-1/3 border-l border-gray-200 flex flex-col">
+            <DevServerStatus projectId={projectId} />
+            {/* Main Preview - AI Generated App Only */}
+            <div className="flex-1 overflow-hidden relative">
+              <Preview projectId={projectId} iframeRef={previewIframeRef} />
+            </div>
+            {/* Terminal Output (optional, collapsible) */}
+            {showTerminal && (
+              <div className="h-64 border-t border-gray-200 shrink-0">
+                <TerminalOutput projectId={projectId} isVisible={showTerminal} />
+              </div>
+            )}
+            {/* Console Logs (optional, collapsible) */}
+            {showConsole && (
+              <div className="h-64 border-t border-gray-200 shrink-0">
+                <ConsoleLogs iframeRef={previewIframeRef} isVisible={showConsole} />
+              </div>
+            )}
           </div>
         )}
 
@@ -255,10 +286,7 @@ export default function EditorPage() {
               projectId={projectId}
               onGenerated={async () => {
                 await refetch();
-                // Small delay to ensure files are saved
-                setTimeout(() => {
-                  refreshPreview();
-                }, 500);
+                // Next.js HMR will automatically reload on file changes
               }}
             />
           </div>
