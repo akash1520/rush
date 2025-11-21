@@ -99,14 +99,14 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
   // Show loading state
   if (isLoading || status?.status === 'starting') {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
+      <div className="flex items-center justify-center h-full bg-bg-light dark:bg-bg-dark">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-4"></div>
-          <p className="text-gray-600">
+          <div className="inline-block animate-spin border-4 border-primary-light dark:border-primary-dark border-t-transparent w-8 h-8 mb-4 rounded-full"></div>
+          <p className="text-fg-light dark:text-fg-dark">
             {status?.status === 'starting' ? 'Starting dev server...' : 'Loading preview...'}
           </p>
           {status?.status === 'starting' && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-light dark:text-muted-dark mt-2">
               This may take a few moments
             </p>
           )}
@@ -118,16 +118,16 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
   // Show error state
   if (error || status?.status === 'error') {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
+      <div className="flex items-center justify-center h-full bg-bg-light dark:bg-bg-dark">
         <div className="text-center max-w-md px-4">
           <div className="text-6xl mb-4">⚠️</div>
-          <p className="text-gray-600 font-semibold mb-2">Preview Error</p>
-          <p className="text-sm text-gray-500">
+          <p className="font-semibold text-fg-light dark:text-fg-dark mb-2">Preview Error</p>
+          <p className="text-sm text-muted-light dark:text-muted-dark">
             {error || status?.error_message || 'Failed to start dev server'}
           </p>
           <button
             onClick={() => startDevServer.mutate(projectId)}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            className="mt-4 px-4 py-2 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all font-medium text-xs"
           >
             Retry
           </button>
@@ -139,16 +139,16 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
   // Show stopped state
   if (status?.status === 'stopped') {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50">
+      <div className="flex items-center justify-center h-full bg-bg-light dark:bg-bg-dark">
         <div className="text-center">
           <div className="text-6xl mb-4">🚀</div>
-          <p className="text-gray-600 font-semibold mb-2">Dev Server Stopped</p>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="font-semibold text-fg-light dark:text-fg-dark mb-2">Dev Server Stopped</p>
+          <p className="text-sm text-muted-light dark:text-muted-dark mb-4">
             Start the dev server to see your AI-generated app
           </p>
           <button
             onClick={() => startDevServer.mutate(projectId)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all font-medium text-xs"
           >
             Start Dev Server
           </button>
@@ -164,11 +164,11 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
 
     if (!isReady) {
       return (
-        <div className="flex items-center justify-center h-full bg-white">
+        <div className="flex items-center justify-center h-full bg-bg-light dark:bg-bg-dark">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-4"></div>
-            <p className="text-gray-600">Waiting for server to be ready...</p>
-            <p className="text-sm text-gray-500 mt-2">
+            <div className="inline-block animate-spin border-4 border-primary-light dark:border-primary-dark border-t-transparent w-8 h-8 mb-4 rounded-full"></div>
+            <p className="text-fg-light dark:text-fg-dark">Waiting for server to be ready...</p>
+            <p className="text-sm text-muted-light dark:text-muted-dark mt-2">
               This may take a few moments
             </p>
           </div>
@@ -177,7 +177,7 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
     }
 
     return (
-      <div className="h-full w-full overflow-hidden bg-white">
+      <div className="h-full w-full overflow-hidden bg-bg-light dark:bg-bg-dark">
         <iframe
           ref={iframeRef}
           src={previewUrl}
@@ -193,11 +193,11 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
 
   // Fallback
   return (
-    <div className="flex items-center justify-center h-full bg-gray-50">
+    <div className="flex items-center justify-center h-full bg-bg-light dark:bg-bg-dark">
       <div className="text-center">
         <div className="text-6xl mb-4">👀</div>
-        <p className="text-gray-600">No preview available</p>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-fg-light dark:text-fg-dark">No preview available</p>
+        <p className="text-sm text-muted-light dark:text-muted-dark mt-2">
           Generate some code using the AI chat to see the preview
         </p>
       </div>

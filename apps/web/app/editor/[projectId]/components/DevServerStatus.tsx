@@ -45,15 +45,15 @@ export function DevServerStatus({ projectId }: DevServerStatusProps) {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'running':
-        return 'bg-green-500';
+        return 'bg-primary-light dark:bg-primary-dark';
       case 'starting':
-        return 'bg-yellow-500';
+        return 'bg-primary-light/50 dark:bg-primary-dark/50';
       case 'stopping':
-        return 'bg-yellow-500';
+        return 'bg-primary-light/50 dark:bg-primary-dark/50';
       case 'error':
-        return 'bg-red-500';
+        return 'bg-primary-light dark:bg-primary-dark';
       default:
-        return 'bg-gray-500';
+        return 'bg-gray-400 dark:bg-gray-600';
     }
   };
 
@@ -74,9 +74,9 @@ export function DevServerStatus({ projectId }: DevServerStatusProps) {
 
   if (isLoading) {
     return (
-      <div className="px-4 py-2 bg-gray-100 border-b border-gray-200 flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
-        <span className="text-xs text-gray-600">Loading status...</span>
+      <div className="px-4 py-2 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark flex items-center gap-2">
+        <div className="w-3 h-3 border border-border-light dark:border-border-dark bg-fg-light dark:bg-fg-dark animate-pulse rounded-full" />
+        <span className="text-xs text-fg-light dark:text-fg-dark font-medium">Loading status...</span>
       </div>
     );
   }
@@ -88,21 +88,21 @@ export function DevServerStatus({ projectId }: DevServerStatusProps) {
   const canStop = isRunning && !isStopping;
 
   return (
-    <div className="px-4 py-2 bg-gray-100 border-b border-gray-200 flex items-center justify-between">
+    <div className="px-4 py-2 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${getStatusColor(status?.status)}`} />
-          <span className="text-xs font-medium text-gray-700">
+          <div className={`w-3 h-3 border border-border-light dark:border-border-dark ${getStatusColor(status?.status)} rounded-full`} />
+          <span className="text-xs font-medium text-fg-light dark:text-fg-dark">
             {getStatusText(status?.status)}
           </span>
         </div>
         {status?.port && (
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-muted-light dark:text-muted-dark">
             Port: {status.port}
           </span>
         )}
         {status?.error_message && (
-          <span className="text-xs text-red-600">
+          <span className="text-xs text-primary-light dark:text-primary-dark font-medium">
             {status.error_message}
           </span>
         )}
@@ -111,14 +111,14 @@ export function DevServerStatus({ projectId }: DevServerStatusProps) {
         <button
           onClick={handleStart}
           disabled={!canStart || startDevServer.isPending || isActionPending}
-          className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-xs px-3 py-1 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           {startDevServer.isPending || isActionPending ? 'Starting...' : 'Start'}
         </button>
         <button
           onClick={handleStop}
           disabled={!canStop || stopDevServer.isPending || isActionPending}
-          className="text-xs px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-xs px-3 py-1 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
         >
           {stopDevServer.isPending || isActionPending ? 'Stopping...' : 'Stop'}
         </button>

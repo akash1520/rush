@@ -131,10 +131,10 @@ export default function EditorPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-4"></div>
-          <p className="text-gray-600">Loading project...</p>
+          <div className="inline-block animate-spin border-4 border-primary-light dark:border-primary-dark border-t-transparent w-8 h-8 mb-4 rounded-full"></div>
+          <p className="text-fg-light dark:text-fg-dark">Loading project...</p>
         </div>
       </div>
     );
@@ -142,11 +142,11 @@ export default function EditorPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Project not found</h1>
-          <Link href="/dashboard" className="text-blue-600 hover:underline">
-            Return to dashboard
+          <h1 className="text-2xl font-bold mb-4 text-fg-light dark:text-fg-dark">Project not found</h1>
+          <Link href="/dashboard" className="text-primary-light dark:text-primary-dark border border-primary-light dark:border-primary-dark px-4 py-2 inline-block rounded-lg hover:bg-primary-light/10 dark:hover:bg-primary-dark/10 transition-all">
+            ← Dashboard
           </Link>
         </div>
       </div>
@@ -156,61 +156,61 @@ export default function EditorPage() {
   const hasUnsavedChanges = Object.values(unsavedChanges).some((changed) => changed);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-bg-light dark:bg-bg-dark">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+      <header className="bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700">
+          <Link href="/dashboard" className="text-fg-light dark:text-fg-dark border border-border-light dark:border-border-dark px-3 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all">
             ← Dashboard
           </Link>
-          <h1 className="text-lg font-semibold">{project.name}</h1>
+          <h1 className="text-lg font-semibold text-fg-light dark:text-fg-dark">{project.name}</h1>
           {hasUnsavedChanges && (
-            <span className="text-sm text-orange-600">● Unsaved changes</span>
+            <span className="text-sm font-medium text-primary-light dark:text-primary-dark">● Unsaved</span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="px-3 py-1 text-xs font-medium border border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
           >
             {showPreview ? '👁️ Preview' : '👁️‍🗨️ Show Preview'}
           </button>
           <button
             onClick={() => setShowTerminal(!showTerminal)}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="px-3 py-1 text-xs font-medium border border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
           >
             {showTerminal ? '💻 Terminal' : '💻 Show Terminal'}
           </button>
           <button
             onClick={() => setShowConsole(!showConsole)}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="px-3 py-1 text-xs font-medium border border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
           >
             {showConsole ? '📝 Console' : '📝 Show Console'}
           </button>
           <button
             onClick={() => setIsChatPanelOpen(!isChatPanelOpen)}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="px-3 py-1 text-xs font-medium border border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
           >
             {isChatPanelOpen ? '💬 Chat' : '💬 Show Chat'}
           </button>
           <button
             onClick={handleSave}
             disabled={!activeFilePath || !unsavedChanges[activeFilePath] || upsertFile.isPending}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1 text-xs font-medium border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save
           </button>
           <button
             onClick={handleSaveAll}
             disabled={!hasUnsavedChanges || upsertFile.isPending}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1 text-xs font-medium border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save All
           </button>
           <button
             onClick={handleDownload}
-            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            className="px-3 py-1 text-xs font-medium border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg hover:bg-accent-light dark:hover:bg-accent-dark transition-all"
           >
             ⬇️ Download
           </button>
@@ -220,7 +220,7 @@ export default function EditorPage() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* File Tree */}
-        <div className="w-64 border-r border-gray-200">
+        <div className="w-64 border-r border-border-light dark:border-border-dark">
           <FileTree
             files={project.files || []}
             activeFile={activeFilePath}
@@ -246,7 +246,7 @@ export default function EditorPage() {
                 language={activeFilePath.split('.').pop() || 'html'}
               />
             ) : (
-              <div className="h-full flex items-center justify-center bg-gray-900 text-gray-400">
+              <div className="h-full flex items-center justify-center bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark">
                 <div className="text-center">
                   <div className="text-4xl mb-4">📝</div>
                   <p>Select a file to edit</p>
@@ -258,7 +258,7 @@ export default function EditorPage() {
 
         {/* Preview Panel - Shows ONLY the AI-generated Next.js app */}
         {showPreview && (
-          <div className="w-1/3 border-l border-gray-200 flex flex-col">
+          <div className="w-1/3 border-l border-border-light dark:border-border-dark flex flex-col">
             <DevServerStatus projectId={projectId} />
             {/* Main Preview - AI Generated App Only */}
             <div className="flex-1 overflow-hidden relative">
@@ -266,13 +266,13 @@ export default function EditorPage() {
             </div>
             {/* Terminal Output (optional, collapsible) */}
             {showTerminal && (
-              <div className="h-64 border-t border-gray-200 shrink-0">
+              <div className="h-64 border-t border-border-light dark:border-border-dark shrink-0">
                 <TerminalOutput projectId={projectId} isVisible={showTerminal} />
               </div>
             )}
             {/* Console Logs (optional, collapsible) */}
             {showConsole && (
-              <div className="h-64 border-t border-gray-200 shrink-0">
+              <div className="h-64 border-t border-border-light dark:border-border-dark shrink-0">
                 <ConsoleLogs iframeRef={previewIframeRef} isVisible={showConsole} />
               </div>
             )}
