@@ -3,6 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useProjects, useCreateProject } from '../../lib/api';
+import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
+import { Input } from '../../components/ui/Input';
+import { Modal } from '../../components/ui/Modal';
+import { ThemeToggle } from '../../components/ui/ThemeToggle';
+import { Badge } from '../../components/ui/Badge';
 
 export default function DashboardPage() {
   const { data: projects, isLoading, error } = useProjects();
@@ -28,100 +34,104 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="border-b border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                Rush
+              <Link href="/" className="text-2xl font-bold text-fg-light dark:text-fg-dark px-4 py-2 bg-primary-light dark:bg-primary-dark text-white dark:text-black rounded-lg">
+                RUSH
               </Link>
             </div>
-            <button
-              onClick={() => setIsCreating(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              + New Project
-            </button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button onClick={() => setIsCreating(true)}>
+                + New Project
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-6">Your Projects</h1>
+        <h1 className="text-4xl font-bold mb-6 text-fg-light dark:text-fg-dark">
+          Your Projects
+        </h1>
 
         {/* Create Project Modal */}
-        {isCreating && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h2 className="text-xl font-bold mb-4">Create New Project</h2>
-              <form onSubmit={handleCreateProject}>
-                <input
-                  type="text"
-                  value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
-                  placeholder="Project name"
-                  className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  autoFocus
-                />
-                <div className="flex gap-2 justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCreating(false);
-                      setNewProjectName('');
-                    }}
-                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={!newProjectName.trim() || createProject.isPending}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {createProject.isPending ? 'Creating...' : 'Create'}
-                  </button>
-                </div>
-              </form>
+        <Modal
+          isOpen={isCreating}
+          onClose={() => {
+            setIsCreating(false);
+            setNewProjectName('');
+          }}
+          title="Create New Project"
+        >
+          <form onSubmit={handleCreateProject} className="space-y-4">
+            <Input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="Project name"
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setIsCreating(false);
+                  setNewProjectName('');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!newProjectName.trim() || createProject.isPending}
+              >
+                {createProject.isPending ? 'Creating...' : 'Create'}
+              </Button>
             </div>
-          </div>
-        )}
+          </form>
+        </Modal>
 
         {/* Loading State */}
         {isLoading && (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Loading projects...</p>
+            <div className="inline-block animate-spin border-4 border-primary-light dark:border-primary-dark border-t-transparent w-8 h-8 mb-4 rounded-full"></div>
+            <p className="text-fg-light dark:text-fg-dark">Loading projects...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            <p className="font-semibold">Error loading projects</p>
-            <p className="text-sm">{error.message}</p>
-          </div>
+          <Card className="p-4 border-primary-light dark:border-primary-dark">
+            <p className="font-semibold text-primary-light dark:text-primary-dark mb-2">Error loading projects</p>
+            <p className="text-sm text-fg-light dark:text-fg-dark">{error.message}</p>
+          </Card>
         )}
 
         {/* Projects Grid */}
         {projects && projects.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
-              <Link
-                key={project.id}
-                href={`/editor/${project.id}`}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-200"
-              >
-                <h3 className="text-lg font-semibold mb-2">{project.name}</h3>
-                <p className="text-sm text-gray-500">
-                  Created {new Date(project.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Updated {new Date(project.updatedAt).toLocaleDateString()}
-                </p>
+              <Link key={project.id} href={`/editor/${project.id}`}>
+                <Card className="p-6 hover:shadow-md transition-all cursor-pointer">
+                  <h3 className="text-lg font-semibold mb-3 text-fg-light dark:text-fg-dark">
+                    {project.name}
+                  </h3>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-light dark:text-muted-dark">
+                      Created {new Date(project.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-xs text-muted-light dark:text-muted-dark">
+                      Updated {new Date(project.updatedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </Card>
               </Link>
             ))}
           </div>
@@ -131,16 +141,15 @@ export default function DashboardPage() {
         {projects && projects.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📁</div>
-            <h2 className="text-2xl font-semibold mb-2">No projects yet</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-semibold mb-2 text-fg-light dark:text-fg-dark">
+              No projects yet
+            </h2>
+            <p className="text-muted-light dark:text-muted-dark mb-6">
               Create your first project to get started with Rush
             </p>
-            <button
-              onClick={() => setIsCreating(true)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
+            <Button onClick={() => setIsCreating(true)} size="lg">
               Create Your First Project
-            </button>
+            </Button>
           </div>
         )}
       </main>

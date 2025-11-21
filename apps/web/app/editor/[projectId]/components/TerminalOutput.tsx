@@ -83,20 +83,20 @@ export function TerminalOutput({ projectId, isVisible }: TerminalOutputProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-900 text-gray-100 font-mono text-sm">
+    <div className="h-full flex flex-col bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark text-sm">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-2 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark">
         <div className="flex items-center gap-2">
           <div
-            className={`w-2 h-2 rounded-full ${
-              isConnected ? 'bg-green-500' : 'bg-red-500'
+            className={`w-3 h-3 border border-border-light dark:border-border-dark rounded-full ${
+              isConnected ? 'bg-primary-light dark:bg-primary-dark' : 'bg-gray-400 dark:bg-gray-600'
             }`}
           />
-          <span className="text-xs font-semibold">Terminal Output</span>
+          <span className="text-xs font-medium text-fg-light dark:text-fg-dark">Terminal Output</span>
         </div>
         <button
           onClick={() => setLogs([])}
-          className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+          className="text-xs px-2 py-1 border border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark text-fg-light dark:text-fg-dark rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-all font-medium"
         >
           Clear
         </button>
@@ -105,16 +105,16 @@ export function TerminalOutput({ projectId, isVisible }: TerminalOutputProps) {
       {/* Logs */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-1"
+        className="flex-1 overflow-y-auto p-4 space-y-1 font-mono"
       >
         {logs.length === 0 ? (
-          <div className="text-gray-500 text-xs">No output yet...</div>
+          <div className="text-muted-light dark:text-muted-dark text-xs">No output yet...</div>
         ) : (
           logs.map((log, index) => (
             <div
               key={index}
               className={`${
-                log.isStderr ? 'text-red-400' : 'text-gray-300'
+                log.isStderr ? 'text-primary-light dark:text-primary-dark' : 'text-fg-light dark:text-fg-dark'
               } whitespace-pre-wrap break-words`}
             >
               {log.text}
