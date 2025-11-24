@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface ConsoleLogsProps {
-  iframeRef: React.RefObject<HTMLIFrameElement>;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
   isVisible: boolean;
 }
 

@@ -96,11 +96,34 @@ export function DevServerStatus({ projectId }: DevServerStatusProps) {
             {getStatusText(status?.status)}
           </span>
         </div>
-        {status?.port && (
-          <span className="text-xs text-muted-light dark:text-muted-dark">
-            Port: {status.port}
-          </span>
-        )}
+        {status?.port && (() => {
+          const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const isProduction = typeof window !== 'undefined' && (
+            API_BASE_URL.includes('railway.app') ||
+            API_BASE_URL.includes('vercel.app') ||
+            (API_BASE_URL.startsWith('https://') && !API_BASE_URL.includes('localhost'))
+          );
+
+          if (isProduction) {
+            const proxyUrl = `${API_BASE_URL.replace(/\/$/, '')}/projects/${projectId}/dev-server/proxy/`;
+            return (
+              <a
+                href={proxyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-primary-light dark:text-primary-dark hover:underline"
+              >
+                {proxyUrl}
+              </a>
+            );
+          }
+
+          return (
+            <span className="text-xs text-muted-light dark:text-muted-dark">
+              Port: {status.port}
+            </span>
+          );
+        })()}
         {status?.error_message && (
           <span className="text-xs text-primary-light dark:text-primary-dark font-medium">
             {status.error_message}

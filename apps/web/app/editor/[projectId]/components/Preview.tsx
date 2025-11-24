@@ -5,7 +5,7 @@ import { useDevServerStatus, useStartDevServer } from '../../../../lib/api';
 
 interface PreviewProps {
   projectId: string;
-  iframeRef?: React.RefObject<HTMLIFrameElement>;
+  iframeRef?: React.RefObject<HTMLIFrameElement | null>;
 }
 
 /**
@@ -160,7 +160,22 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
   // Show preview iframe - THIS IS THE ONLY PREVIEW
   // It shows the AI-generated Next.js app running on the dev server
   if (status?.status === 'running' && status.port) {
-    const previewUrl = `http://localhost:${status.port}`;
+    // Use proxy endpoint in production (Railway), localhost in development
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // Better production detection: check for https or railway/vercel domains
+    const isProduction = typeof window !== 'undefined' && (
+      API_BASE_URL.includes('railway.app') ||
+      API_BASE_URL.includes('vercel.app') ||
+      (API_BASE_URL.startsWith('https://') && !API_BASE_URL.includes('localhost'))
+    );
+    const previewUrl = isProduction
+      ? `${API_BASE_URL.replace(/\/$/, '')}/projects/${projectId}/dev-server/proxy/`
+      : `http://localhost:${status.port}`;
+
+    // Log for debugging
+    if (typeof window !== 'undefined') {
+      console.log('Preview URL:', previewUrl, 'Production:', isProduction, 'API_BASE_URL:', API_BASE_URL);
+    }
 
     if (!isReady) {
       return (
@@ -185,7 +200,7 @@ export function Preview({ projectId, iframeRef: externalIframeRef }: PreviewProp
           onLoad={handleIframeLoad}
           onError={handleIframeError}
           title="AI Generated App Preview"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-navigation allow-top-navigation"
         />
       </div>
     );
